@@ -1,75 +1,83 @@
-/**
- * @license
- * Copyright 2019 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-
 import {LitElement, html, css} from 'lit';
 
-/**
- * An example element.
- *
- * @fires count-changed - Indicates when the count changes
- * @slot - This element has a slot
- * @csspart button - The button
- */
-export class MyElement extends LitElement {
-  static get styles() {
-    return css`
-      :host {
-        display: block;
-        border: solid 1px gray;
-        padding: 16px;
-        max-width: 800px;
-      }
-    `;
-  }
-
-  static get properties() {
-    return {
-      /**
-       * The name to say "Hello" to.
-       * @type {string}
-       */
-      name: {type: String},
-
-      /**
-       * The number of times the button has been clicked.
-       * @type {number}
-       */
-      count: {type: Number},
-    };
-  }
-
+class Todo extends LitElement {
   constructor() {
     super();
-    this.name = 'World';
-    this.count = 0;
+    this.TodosList = [];
+    this.input = null;
   }
+
+  static properties = {
+    TodosList: {type: Array},
+    input: {type: String},
+  };
+
+  setInput(event) {
+    this.input = event.target.value;
+  }
+
+  addTodo() {
+    this.TodosList.push({
+      name: this.input,
+      id: this.TodosList.length + 1,
+      completed: false,
+    });
+    this.requestUpdate();
+  }
+
+  updateTodo(todo) {
+    todo.completed = !todo.completed;
+    this.requestUpdate;
+  }
+
+  static styles = css`
+    .todos-wrapper {
+      width: 35%;
+      margin: 0px auto;
+      background-color: rgb(136, 139, 241);
+      padding: 20px;
+      font-family: 'Verdana';
+    }
+    .list {
+      margin-top: 9px;
+    }
+    .list li {
+      background-color: white;
+      list-style: none;
+      padding: 6px;
+      margin-top: 3px;
+    }
+    .completed {
+      text-decoration-line: line-through;
+      color: #777;
+    }
+    input {
+      padding: 5px;
+      width: 70%;
+    }
+    button {
+      padding: 5px 10px;
+      font-weight: bold;
+    }
+  `;
 
   render() {
-    return html`
-      <h1>${this.sayHello(this.name)}!</h1>
-      <button @click=${this._onClick} part="button">
-        Click Count: ${this.count}
-      </button>
-      <slot></slot>
-    `;
-  }
-
-  _onClick() {
-    this.count++;
-    this.dispatchEvent(new CustomEvent('count-changed'));
-  }
-
-  /**
-   * Formats a greeting
-   * @param name {string} The name to say "Hello" to
-   * @returns {string} A greeting directed at `name`
-   */
-  sayHello(name) {
-    return `Hello, ${name}`;
+    return html`<div class="todos-wrapper">
+      <h4>My Todos List</h4>
+      <input placeholder="Add task..." @input=${this.setInput} />
+      <button @click=${this.addTodo}>Add</button>
+      <div class="list">
+        ${this.TodosList.map(
+          (todo) => html` <li
+            @click=${() => this.updateTodo(todo)}
+            class=${todo.completed && 'completed'}
+          >
+            ${todo.name}
+          </li>`
+        )}
+      </div>
+    </div>`;
   }
 }
 
-window.customElements.define('my-element', MyElement);
+customElements.define('my-element', Todo);
