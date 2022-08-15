@@ -30,6 +30,13 @@ class Todo extends LitElement {
     this.requestUpdate;
   }
 
+  removeTodo(todo) {
+    // console.log(todo);
+    const id = todo.id;
+    this.TodosList = this.TodosList.filter((todo) => todo.id !== id);
+    this.requestUpdate();
+  }
+
   static styles = css`
     .todos-wrapper {
       width: 35%;
@@ -73,6 +80,7 @@ class Todo extends LitElement {
             class=${todo.completed && 'completed'}
           >
             ${todo.name}
+            <button @click=${() => this.removeTodo(todo)}>X</button>
           </li>`
         )}
       </div>
